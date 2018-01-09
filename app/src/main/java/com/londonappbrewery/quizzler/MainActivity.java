@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,9 +16,14 @@ public class MainActivity extends Activity {
     // TODO: Declare member variables here:
     private Button mTrueButton;
     private Button mFalseButton;
-    private TextView mQuestionTextView;
+    private ProgressBar mProgressBar;
+    private TextView mScore;
+
     private int mCurrQuestionIdx;
+    private TextView mQuestionTextView;
     private Question mCurrQuestion;
+
+    private int mCorrectAnswers = 0;
 
     // TODO: Uncomment to create question bank
     private Question[] mQuestionBank = new Question[]{
@@ -36,6 +42,8 @@ public class MainActivity extends Activity {
             new Question(R.string.question_13, true)
     };
 
+    final private int PROGRESSBAR_INCREMENT = (int) Math.ceil(100.0 / mQuestionBank.length);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,13 +52,16 @@ public class MainActivity extends Activity {
         mTrueButton = (Button) findViewById(R.id.true_button);
         mFalseButton = (Button) findViewById(R.id.false_button);
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        mScore = (TextView) findViewById(R.id.score);
 
+        updateScore(false);
         setCurrentQuestionText();
 
         mTrueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), mCurrQuestion.checkAnswer(true), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), checkAnswer(true), Toast.LENGTH_SHORT).show();
                 getNextQuestion();
             }
         });
@@ -58,10 +69,38 @@ public class MainActivity extends Activity {
         mFalseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), mCurrQuestion.checkAnswer(false), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), checkAnswer(false), Toast.LENGTH_SHORT).show();
                 getNextQuestion();
             }
         });
+    }
+
+    private String checkAnswer(boolean answer) {
+        String result = "Wrong!";
+        boolean isCorrect = mCurrQuestion.isAnswer() == answer;
+
+        if (isCorrect) {
+            result = "You got it!";
+        }
+
+        // update progressbar
+        updateProgressBar();
+
+        // update score
+        updateScore(isCorrect);
+
+        return result;
+    }
+
+    private void updateProgressBar() {
+        mProgressBar.setProgress(mProgressBar.getProgress() + PROGRESSBAR_INCREMENT * mCurrQuestionIdx);
+    }
+
+    private void updateScore(boolean isCorrect) {
+        if (isCorrect) {
+            mCorrectAnswers += 1;
+        }
+        mScore.setText(mCorrectAnswers + "/" + mQuestionBank.length);
     }
 
     private void setCurrentQuestionText() {
@@ -71,12 +110,18 @@ public class MainActivity extends Activity {
 
     private void getNextQuestion() {
         // validate question idx for index out of bounds.
-        if (mQuestionBank.length - 1 == mCurrQuestionIdx)
-        {
+        if (mQuestionBank.length - 1 == mCurrQuestionIdx) {
             mCurrQuestionIdx = 0;
         }
 
         mCurrQuestionIdx += 1;
         setCurrentQuestionText();
     }
+
+    private void reset()
+    {
+        mCorrectAnswers = 0;
+
+    }
+
 }

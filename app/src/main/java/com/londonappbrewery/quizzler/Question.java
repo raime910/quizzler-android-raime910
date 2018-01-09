@@ -29,9 +29,4 @@ public class Question {
     public void setAnswer(boolean answer) {
         mAnswer = answer;
     }
-
-    public String checkAnswer(boolean userAnswer)
-    {
-        return userAnswer == mAnswer ? "Correct" : "Wrong";
-    }
 }
