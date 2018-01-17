@@ -12,7 +12,6 @@ public class MainActivity extends Activity {
 
     // TODO: Declare constants here
 
-
     // TODO: Declare member variables here:
     private Button mTrueButton;
     private Button mFalseButton;
@@ -93,7 +92,7 @@ public class MainActivity extends Activity {
     }
 
     private void updateProgressBar() {
-        mProgressBar.setProgress(mProgressBar.getProgress() + PROGRESSBAR_INCREMENT * mCurrQuestionIdx);
+        mProgressBar.setProgress(PROGRESSBAR_INCREMENT * (mCurrQuestionIdx + 1));
     }
 
     private void updateScore(boolean isCorrect) {
